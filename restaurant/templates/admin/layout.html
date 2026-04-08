@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .sidebar-transition { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .sidebar-collapsed { width: 80px; }
+        .sidebar-expanded { width: 260px; }
+        
+        /* Orange theme for Menu/Dashboard */
+        .nav-orange-active { background-color: #fff7ed; color: #ea580c; border-right: 4px solid #ea580c; }
+        
+        /* Indigo/Purple theme for Tables/Reservations */
+        .nav-indigo-active { background-color: #f5f3ff; color: #4f46e5; border-right: 4px solid #4f46e5; }
+        
+        /* Hide labels cleanly during collapse */
+        .sidebar-collapsed .sidebar-label, .sidebar-collapsed #logo-name { display: none; }
+    </style>
+</head>
+<body class="bg-slate-50 flex min-h-screen">
+
+    <aside id="sidebar" class="sidebar-expanded sidebar-transition bg-white border-r border-slate-200 flex flex-col sticky top-0 h-screen z-50">
+        <div class="p-6 flex items-center justify-between">
+            <div id="logo-text" class="flex items-center space-x-3 overflow-hidden">
+                <div class="bg-orange-500 p-2 rounded-lg shrink-0">
+                    <i class="fas fa-utensils text-white"></i>
+                </div>
+                <span id="logo-name" class="font-bold text-slate-800 text-xl tracking-tight whitespace-nowrap">POS Admin</span>
+            </div>
+            <button onclick="toggleSidebar()" class="p-2 hover:bg-slate-100 rounded-lg text-slate-400 transition-colors">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+
+        <nav class="flex-1 px-4 space-y-2 mt-4">
+            <a href="{{ url_for('admin.dashboard') }}" 
+               class="flex items-center p-3 rounded-xl text-slate-600 hover:bg-slate-50 transition group {{ 'nav-orange-active' if request.endpoint == 'admin.dashboard' }}">
+                <i class="fas fa-th-large w-6 text-center group-hover:scale-110 transition"></i>
+                <span class="ml-3 font-semibold sidebar-label whitespace-nowrap">Dashboard</span>
+            </a>
+
+            <a href="{{ url_for('admin.manage_menu') }}" 
+               class="flex items-center p-3 rounded-xl text-slate-600 hover:bg-slate-50 transition group {{ 'nav-orange-active' if request.endpoint == 'admin.manage_menu' }}">
+                <i class="fas fa-book-open w-6 text-center group-hover:scale-110 transition"></i>
+                <span class="ml-3 font-semibold sidebar-label whitespace-nowrap">Menu</span>
+            </a>
+
+            <div class="my-4 border-t border-slate-100 mx-2"></div>
+
+            <a href="{{ url_for('admin.manage_tables') }}" 
+               class="flex items-center p-3 rounded-xl text-slate-600 hover:bg-slate-50 transition group {{ 'nav-indigo-active' if request.endpoint == 'admin.manage_tables' }}">
+                <i class="fas fa-chair w-6 text-center group-hover:scale-110 transition"></i>
+                <span class="ml-3 font-semibold sidebar-label whitespace-nowrap">Tables</span>
+            </a>
+
+            <a href="{{ url_for('admin.manage_reservations') }}" 
+               class="flex items-center p-3 rounded-xl text-slate-600 hover:bg-slate-50 transition group {{ 'nav-indigo-active' if request.endpoint == 'admin.manage_reservations' }}">
+                <i class="fas fa-calendar-check w-6 text-center group-hover:scale-110 transition"></i>
+                <span class="ml-3 font-semibold sidebar-label whitespace-nowrap">Reservations</span>
+            </a>
+        </nav>
+
+        <div class="p-4 border-t border-slate-100">
+            <a href="{{ url_for('logout') }}" class="flex items-center p-3 rounded-xl text-red-500 hover:bg-red-50 transition group">
+                <i class="fas fa-sign-out-alt w-6 text-center group-hover:translate-x-1 transition"></i>
+                <span class="ml-3 font-semibold sidebar-label whitespace-nowrap">Logout</span>
+            </a>
+        </div>
+    </aside>
+
+    <div class="flex-1 flex flex-col min-w-0">
+        <header class="bg-white border-b border-slate-200 h-20 flex items-center px-8 sticky top-0 z-40">
+            <h2 class="text-xl font-bold text-slate-800 uppercase tracking-tight">
+                {% block section_title %}{% endblock %}
+            </h2>
+            <div class="ml-auto flex items-center space-x-4">
+                <div class="text-right mr-3 hidden sm:block">
+                    <p class="text-sm font-bold text-slate-700">Administrator</p>
+                    <p class="text-xs text-slate-400">Main Kitchen</p>
+                </div>
+                <div class="w-10 h-10 rounded-full bg-slate-100 border-2 border-white shadow-sm flex items-center justify-center text-slate-600 font-bold">
+                    A
+                </div>
+            </div>
+        </header>
+
+        <main class="p-8">
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            if (sidebar.classList.contains('sidebar-expanded')) {
+                sidebar.classList.remove('sidebar-expanded');
+                sidebar.classList.add('sidebar-collapsed');
+            } else {
+                sidebar.classList.remove('sidebar-collapsed');
+                sidebar.classList.add('sidebar-expanded');
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+        <!-- ICONS -->
+        <script src="https://kit.fontawesome.com/64d58efce2.js" crossorigin="anonymous"></script>
+
+        <!-- CSS -->
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='styles/css/style-login.css') }}">
+
+        <title>Registration</title>
+
+    </head>
+</head>
+
+<body>
+    <div class="container sign-up-mode">
+        <div class="forms-container">
+            <div class="signin-signup">
+                <!-- REGISTRATION FORM -->
+                <form method="POST" action="{{ url_for('register_page') }}" class="sign-up-form">
+                    {{ form.hidden_tag() }}
+                    <h2 class="title">Sign up</h2>
+
+                    <div class="input-field">
+                        <i class="fas fa-user"></i>
+                        {{ form.username(placeholder = "Username") }}
+                    </div>
+                    <div class="input-field">
+                        <i class="fas fa-user"></i>
+                        {{ form.fullname(placeholder = "Full Name") }}
+                    </div>
+                    <div class="input-field">
+                        <i class="fas fa-map-marker-alt"></i>
+                        {{ form.address(placeholder = "Address") }}
+                    </div>
+                    <div class="input-field">
+                        <i class="fas fa-mobile-alt"></i>
+                        <!-- <input type="email" placeholder="Email" /> -->
+                        {{ form.phone_number(placeholder = 'Phone Number') }}
+                    </div>
+                    <div class="input-field">
+                        <i class="fas fa-lock"></i>
+                        <!-- <input type="password" placeholder="Password" /> -->
+                        {{ form.password1(placeholder = 'Password') }}
+                    </div>
+                    <div class="input-field">
+                        <i class="fas fa-lock"></i>
+                        <!-- <input type="password" placeholder="Confirm Password" /> -->
+                        {{ form.password2(placeholder = 'Confirm Password') }}
+                    </div>
+                    <!-- <input type="submit" class="btn" value="Sign up" /> -->
+                    {{ form.submit(class = 'btn') }}
+
+                    <p class="social-text">Or Sign up with social platforms</p>
+                    <div class="social-media">
+                        <a href="#" class="social-icon">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="social-icon">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="social-icon">
+                            <i class="fab fa-google"></i>
+                        </a>
+                        <a href="#" class="social-icon">
+                            <i class="fab fa-linkedin-in"></i>
+                        </a>
+                    </div>
+                </form>
+                <!-- REGISTRATION FORM ENDS -->
+            </div>
+        </div>
+        
+    </div>
+<div class="panels-container sign-in-mode">
+            <!-- REGISTER PANEL -->
+            <div class="panel right-panel">
+                <div class="content">
+                    <h3>One of us?</h3>
+                    <p>
+                        Already registered? then hop on & access our services.
+                    </p>
+                    <button class="btn transparent" id="sign-in-btn">
+                        Sign in
+                    </button>
+                </div>
+                <!-- <img src="static/styles/img/register.svg" class="image" alt="" /> -->
+            </div>
+        </div>
+
+    <!-- JAVASCRIPT -->
+    <script src="static/styles/js/login.js"></script>
+</body>
+
+</html>

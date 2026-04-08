@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng nhập hệ thống</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .login-container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            width: 350px;
+        }
+        h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #666;
+        }
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box; /* Giúp padding không làm tăng chiều rộng input */
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            border: none;
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .footer-links {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+        .footer-links a {
+            color: #007bff;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="login-container">
+    <h2>Đăng Nhập</h2>
+     <!-- LOGIN FORM -->
+        <form method="POST" action="{{ url_for('admin.login') }}" class="sign-in-form">
+          {{ forml.hidden_tag() }}
+          <h2 class="title">Sign in</h2>
+          <div class="input-field">
+            <i class="fas fa-user"></i>
+            <!-- <input type="text" placeholder="Username" /> -->
+            {{ forml.username(placeholder = "Username") }}
+          </div>
+          <div class="input-field">
+            <i class="fas fa-lock"></i>
+            <!-- <input type="password" placeholder="Password" /> -->
+            {{ forml.password(placeholder = "Password") }}
+          </div>
+
+          <!-- <input type="submit" value="Login" class="btn solid" /> -->
+          {{ forml.submit(class = 'btn solid') }}
+
+        
+          <div class="social-media">
+            <a href="#" class="social-icon">
+              <i class="fab fa-facebook-f"></i>
+            </a>
+            <a href="#" class="social-icon">
+              <i class="fab fa-twitter"></i>
+            </a>
+            <a href="#" class="social-icon">
+              <i class="fab fa-google"></i>
+            </a>
+            <a href="#" class="social-icon">
+              <i class="fab fa-linkedin-in"></i>
+            </a>
+          </div>
+        </form>
+        <!-- LOGIN FORM ENDS -->
+
+</div>
+
+</body>
+</html>

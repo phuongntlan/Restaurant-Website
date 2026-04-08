@@ -1,0 +1,38 @@
+{% extends "layout.html" %}
+
+<!-- {% block section_title %}Table Reservations{% endblock %} -->
+
+{% block content %}
+<!-- ========== MENU ==========-->
+<section class="menu section bd-container" id="menu">
+    <h2 class="section-title">Menu</h2>
+
+    <!-- SEARCH BOX -->
+    <div class="search-box">
+        <button class="btn-search"><i class='bx bxs-search'></i></button>
+        <input type="text" class="input-search" placeholder="Search..">
+      </div>
+    <!-- SEARCH BOX ENDS -->
+
+    <!-- ========== ITEMS ==========-->
+    <div class="menu__container bd-grid">
+
+        {% for item in items %}
+        <div class="menu__content">
+            <!-- <img src="static/styles/img/plate1.png" alt="" class="menu__img"> -->
+            <!-- <img src="static/styles/img/{{ item.source }}"  alt="" class="menu__img" /> -->
+            <img class="menu__img" src="{{ url_for('static', filename = '/img/'+item.source) }}" alt="" class="menu__img">
+            <!-- <h3 class="menu__name">Barbecue salad</h3> -->
+            <h3 class="menu__name">{{ item.name }}</h3>
+            <!-- <span class="menu__detail">Delicious dish</span> -->
+            <span class = "menu_detail"> {{ item.description }} </span>
+            <span class="menu__price">{{ "{:,.0f}".format(item.price) }} VND</span>
+            <!-- <a href="#" class="button menu__button"><i class='bx bx-cart-alt'></i></a> -->
+
+        </div>
+        {% endfor %}
+
+    </div>
+</section>
+<!-- ========== MENU ENDS ==========-->
+{% endblock %}

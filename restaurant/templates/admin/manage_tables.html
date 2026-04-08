@@ -1,0 +1,188 @@
+{% extends "admin/layout.html" %}
+
+{% block section_title %}Table Management{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto">
+    <div class="flex justify-between items-center mb-8 bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+        <div>
+            <h1 class="text-2xl font-bold text-slate-800 flex items-center">
+                <span class="bg-indigo-100 p-2 rounded-lg mr-3">
+                    <i class="fas fa-chair text-indigo-600"></i>
+                </span>
+                Floor Management
+            </h1>
+            <p class="text-slate-500 text-sm mt-1">Configure physical tables and seating capacities</p>
+        </div>
+        <button onclick="openModal('add')"
+            class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-xl shadow-md shadow-indigo-200 flex items-center transition-all active:scale-95 font-semibold">
+            <i class="fas fa-plus-circle mr-2"></i> Add New Table
+        </button>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+        <table class="w-full text-left border-collapse">
+            <thead class="bg-slate-50 text-slate-600 uppercase text-xs font-bold border-b border-slate-100">
+                <tr>
+                    <th class="px-6 py-4">Status</th>
+                    <th class="px-6 py-4">Table Name/No.</th>
+                    <th class="px-6 py-4">Capacity</th>
+                    <th class="px-6 py-4">Total Bookings</th>
+                    <th class="px-6 py-4 text-center">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100">
+                {% for t in tables %}
+                <tr class="hover:bg-slate-50/50 transition text-sm">
+                    <td class="px-6 py-4">
+                        {% if t.is_occupied %}
+                        <span
+                            class="bg-rose-100 text-rose-600 px-3 py-1 rounded-full text-xs font-bold uppercase">Occupied</span>
+                        {% else %}
+                        <span
+                            class="bg-emerald-100 text-emerald-600 px-3 py-1 rounded-full text-xs font-bold uppercase">Available</span>
+                        {% endif %}
+                    </td>
+                    <td class="px-6 py-4 font-bold text-slate-800">Table {{ t.table_name }}</td>
+                    <td class="px-6 py-4 text-slate-600">
+                        <i class="fas fa-users mr-1 text-slate-400"></i> {{ t.capacity }} Guests
+                    </td>
+                    <td class="px-6 py-4 text-slate-500">
+                        {{ t.all_orders|length }} reservations
+                    </td>
+                    <td class="px-6 py-4 text-center">
+                        <div class="flex justify-center gap-2">
+                            <button
+                                onclick="openModal('edit', '{{ t.table_id }}', '{{ t.table_name|e }}', '{{ t.capacity }}')"
+                                class="text-indigo-600 hover:bg-indigo-50 w-9 h-9 flex items-center justify-center rounded-lg transition"
+                                title="Edit">
+                                <i class="fas fa-edit"></i>
+                            </button>
+
+                            <form action="{{ url_for('admin.delete_table', table_id=t.table_id) }}" method="POST"
+                                onsubmit="return confirm('Are you sure you want to delete this table? All associated reservations will be affected.')">
+                                <button type="submit"
+                                    class="text-red-500 hover:bg-red-50 w-9 h-9 flex items-center justify-center rounded-lg transition"
+                                    title="Delete">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+
+                {% if not tables %}
+                <tr>
+                    <td colspan="5" class="px-6 py-12 text-center text-slate-400 italic">
+                        No tables configured. Click "Add New Table" to set up your floor plan.
+                    </td>
+                </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div id="tableModal"
+    class="fixed inset-0 bg-slate-900/60 hidden backdrop-blur-sm flex items-center justify-center p-4 z-50 transition-all duration-300">
+    <div
+        class="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-md overflow-hidden transform transition-all scale-100 border border-indigo-50">
+
+        <div class="px-9 pt-9 pb-4 flex justify-between items-start">
+            <div>
+                <h2 id="modalTitle" class="text-2xl font-black text-slate-800 tracking-tight flex items-center">
+                    <span class="w-2 h-6 bg-indigo-500 rounded-full mr-3"></span>
+                    Add New Table
+                </h2>
+                <p class="text-slate-400 text-sm mt-1 font-medium ml-5">Physical floor plan configuration.</p>
+            </div>
+            <button onclick="closeModal()"
+                class="w-10 h-10 flex items-center justify-center bg-slate-50 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-full transition-all duration-200">
+                <i class="fas fa-times text-lg"></i>
+            </button>
+        </div>
+
+        <form id="tableForm" method="POST" class="p-9 pt-4">
+            {{ form.hidden_tag() }}
+            <input type="hidden" name="table_id" id="modal_table_id">
+
+            <div class="space-y-7">
+                <div class="relative group">
+                    <label
+                        class="flex items-center text-xs font-black text-slate-400 uppercase tracking-widest mb-2 ml-1 group-focus-within:text-indigo-500 transition-colors">
+                        <i class="fas fa-hashtag mr-2 opacity-50"></i> Table ID / Number
+                    </label>
+                    {{ form.table_name(
+                    id="modal_table_name",
+                    placeholder="e.g. Table 07",
+                    class="w-full bg-slate-50 border-2 border-slate-100 rounded-2xl px-6 py-4 text-slate-700 font-bold
+                    focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10 outline-none
+                    transition-all duration-300 placeholder:text-slate-300 placeholder:font-normal"
+                    ) }}
+                </div>
+
+                <div class="relative group">
+                    <label
+                        class="flex items-center text-xs font-black text-slate-400 uppercase tracking-widest mb-2 ml-1 group-focus-within:text-indigo-500 transition-colors">
+                        <i class="fas fa-users mr-2 opacity-50"></i> Max Guests
+                    </label>
+                    {{ form.capacity(
+                    id="modal_capacity",
+                    placeholder="e.g. 4",
+                    type="number",
+                    class="w-full bg-slate-50 border-2 border-slate-100 rounded-2xl px-6 py-4 text-slate-700 font-bold
+                    focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10 outline-none
+                    transition-all duration-300 placeholder:text-slate-300 placeholder:font-normal"
+                    ) }}
+                </div>
+            </div>
+
+            <div class="flex gap-4 mt-12">
+                <button type="button" onclick="closeModal()"
+                    class="flex-1 px-4 py-4 border-2 border-slate-100 rounded-2xl text-slate-500 font-bold hover:bg-slate-50 hover:border-slate-200 transition-all active:scale-95">
+                    Cancel
+                </button>
+                {{ form.submit(
+                value="Confirm Table",
+                class="flex-[2] bg-indigo-600 hover:bg-indigo-700 text-white font-black py-4 px-4 rounded-2xl
+                cursor-pointer transition-all shadow-xl shadow-indigo-500/25 active:scale-95 hover:-translate-y-1"
+                ) }}
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    const modal = document.getElementById('tableModal');
+    const modalTitle = document.getElementById('modalTitle');
+    const idInput = document.getElementById('modal_table_id');
+    const nameInput = document.getElementById('modal_table_name');
+    const capacityInput = document.getElementById('modal_capacity');
+
+    function openModal(mode, id = '', name = '', capacity = '') {
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+
+        if (mode === 'edit') {
+            modalTitle.innerText = "Edit Table Settings";
+            idInput.value = id;
+            nameInput.value = name;
+            capacityInput.value = capacity;
+        } else {
+            modalTitle.innerText = "Add New Table";
+            idInput.value = '';
+            document.getElementById('tableForm').reset();
+        }
+    }
+
+    function closeModal() {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+    }
+
+    window.onclick = function (event) {
+        if (event.target == modal) closeModal();
+    }
+</script>
+{% endblock %}
