@@ -1,0 +1,250 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<section class="profile section bd-container" id="profile">
+    <div class="profile__header" style="text-align: center; margin-bottom: 3rem;">
+        <span class="section-subtitle" style="display: block; color: var(--first-color); font-weight: 600; margin-bottom: 0.5rem;">My Account</span>
+        <h2 class="section-title" style="font-family: 'Playfair Display', serif; font-size: 2.5rem; color: var(--title-color);">Profile Details</h2>
+    </div>
+
+    <div class="profile__container bd-grid">
+        <div class="profile__sidebar">
+            <div class="profile__info-card shadow-animate">
+                <div class="profile__avatar">
+                    <i class='bx bxs-user-circle'></i>
+                </div>
+                <h3 class="profile__username">{{ current_user.username }}</h3>
+                <p class="profile__email"><i class='bx bx-envelope'></i> {{ current_user.email }}</p>
+                <div class="profile__badge">Verified Member</div>
+            </div>
+        </div>
+
+        <div class="profile__main">
+            <h3 class="booking__section-title">
+                <i class='bx bx-list-ul'></i> My Reservations
+            </h3>
+
+            <div class="bookings__list">
+                {% if reservations %}
+                    {% for res in reservations %}
+                    <div class="booking__card shadow-animate" id="booking-{{ res.id }}">
+                        <div class="booking__status-bar {% if res.status == 'Cancelled' %}status-cancelled{% else %}status-active{% endif %}"></div>
+                        
+                        <div class="booking__content">
+                            <div class="booking__date-box">
+                                <span class="booking__day">{{ res.date.strftime('%d') }}</span>
+                                <span class="booking__month">{{ res.date.strftime('%b') }}</span>
+                            </div>
+
+                            <div class="booking__details">
+                                <h4 class="booking__year">{{ res.date.strftime('%Y') }}</h4>
+                                <div class="booking__info-grid">
+                                    <span><i class='bx bx-time-five'></i> {{ res.time_slot }}</span>
+                                    <span><i class='bx bx-group'></i> {{ res.guest_count }} People</span>
+                                    <span><i class='bx bx-table'></i> {{ res.table_info.table_name }}</span>
+                                </div>
+                                <div class="booking__status-wrapper">
+                                    Status: <span class="status-badge status-{{ res.status|lower }}">{{ res.status }}</span>
+                                </div>
+                            </div>
+
+                            <div class="booking__actions">
+                                {% if res.status != 'Cancelled' %}
+                                <button class="btn-cancel" onclick="confirmCancel('{{ res.id }}')">
+                                    <i class='bx bx-x'></i> Cancel
+                                </button>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="profile__empty-state">
+                        <i class='bx bx-calendar-x'></i>
+                        <p>You have no reservations yet.</p>
+                        <a href="{{ url_for('table_page') }}" class="button">Book a Table Now</a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+    :root {
+        --status-green: #22c55e;
+        --status-red: #ef4444;
+        --status-yellow: #f59e0b;
+    }
+
+    .profile__container {
+        display: grid;
+        grid-template-columns: 300px 1fr;
+        gap: 2.5rem;
+        align-items: start;
+    }
+
+    /* User Info Card */
+    .profile__info-card {
+        background: #fff;
+        padding: 2.5rem 1.5rem;
+        border-radius: 1.5rem;
+        text-align: center;
+        border: 1px solid #f0fdf4;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.03);
+    }
+
+    .profile__avatar {
+        font-size: 5rem;
+        color: var(--first-color);
+        margin-bottom: 1rem;
+    }
+
+    .profile__username {
+        font-size: 1.5rem;
+        color: var(--title-color);
+        margin-bottom: 0.5rem;
+    }
+
+    .profile__email {
+        font-size: 0.9rem;
+        color: var(--text-color);
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+
+    .profile__badge {
+        display: inline-block;
+        padding: 0.4rem 1rem;
+        background: #f0fdf4;
+        color: var(--first-color);
+        border-radius: 2rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+
+    /* Reservations List */
+    .booking__section-title {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        font-size: 1.25rem;
+        color: var(--title-color);
+        margin-bottom: 1.5rem;
+    }
+
+    .booking__card {
+        background: #fff;
+        border-radius: 1.25rem;
+        overflow: hidden;
+        margin-bottom: 1.5rem;
+        display: flex;
+        position: relative;
+        border: 1px solid #f3f4f6;
+        transition: 0.3s;
+    }
+
+    .booking__card:hover { transform: translateY(-3px); box-shadow: 0 12px 30px rgba(0,0,0,0.06); }
+
+    .booking__status-bar { width: 6px; }
+    .status-active { background: var(--status-green); }
+    .status-cancelled { background: var(--status-red); }
+
+    .booking__content {
+        padding: 1.5rem;
+        display: flex;
+        align-items: center;
+        width: 100%;
+        gap: 1.5rem;
+    }
+
+    .booking__date-box {
+        background: #f9fafb;
+        padding: 0.75rem 1.25rem;
+        border-radius: 1rem;
+        text-align: center;
+        min-width: 80px;
+    }
+
+    .booking__day { display: block; font-size: 1.5rem; font-weight: 700; color: var(--first-color); }
+    .booking__month { font-size: 0.8rem; text-transform: uppercase; font-weight: 600; color: var(--text-color); }
+
+    .booking__details { flex: 1; }
+    .booking__year { font-size: 0.85rem; color: #9ca3af; margin-bottom: 0.25rem; }
+    
+    .booking__info-grid {
+        display: flex;
+        gap: 1.5rem;
+        margin-bottom: 0.5rem;
+        font-size: 0.95rem;
+        font-weight: 500;
+    }
+    .booking__info-grid i { color: var(--first-color); margin-right: 0.25rem; }
+
+    .status-badge {
+        font-size: 0.75rem;
+        padding: 0.25rem 0.75rem;
+        border-radius: 0.5rem;
+        font-weight: 600;
+    }
+    .status-confirmed { background: #dcfce7; color: #166534; }
+    .status-pending { background: #fef3c7; color: #92400e; }
+    .status-cancelled { background: #fee2e2; color: #991b1b; }
+
+    /* Actions */
+    .btn-cancel {
+        background: #fff;
+        border: 1px solid #fee2e2;
+        color: var(--status-red);
+        padding: 0.6rem 1rem;
+        border-radius: 0.75rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.3s;
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+
+    .btn-cancel:hover { background: #fee2e2; }
+
+    /* Empty State */
+    .profile__empty-state {
+        text-align: center;
+        padding: 4rem 0;
+        background: #f9fafb;
+        border-radius: 1.5rem;
+        border: 2px dashed #e5e7eb;
+    }
+    .profile__empty-state i { font-size: 4rem; color: #d1d5db; margin-bottom: 1rem; }
+
+    @media screen and (max-width: 850px) {
+        .profile__container { grid-template-columns: 1fr; }
+        .booking__content { flex-direction: column; text-align: center; }
+        .booking__info-grid { justify-content: center; flex-wrap: wrap; }
+    }
+</style>
+
+<script>
+function confirmCancel(bookingId) {
+    if (confirm("Are you sure you want to cancel your booking?")) {
+        fetch(`/cancel-booking/${bookingId}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+        })
+        .then(response => {
+            if (response.ok) {
+                alert("Booking cancelled successfully.");
+                location.reload();
+            } else {
+                alert("Error: Could not cancel booking.");
+            }
+        });
+    }
+}
+</script>
+{% endblock %}

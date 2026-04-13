@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, IntegerField, TextAreaField
+from wtforms import StringField, PasswordField, SubmitField, IntegerField, TextAreaField, SelectField, HiddenField
 from wtforms.validators import Length, EqualTo, Email, DataRequired, NumberRange
 from flask_wtf.file import FileAllowed, FileField
 
@@ -22,7 +22,12 @@ class OrderIDForm(FlaskForm):
     submit = SubmitField(label = 'Track')
 
 class ReserveForm(FlaskForm):
-    submit = SubmitField(label = 'Reserve')
+    # Using SelectField for dynamic data
+    date = SelectField('Date', validators=[DataRequired()])
+    time_slot = SelectField('Time Slot', validators=[DataRequired()])
+    guest_count = SelectField('Guests', validators=[DataRequired()])
+    
+    submit = SubmitField(label='Reserve')
 
 class AddForm(FlaskForm):
     submit = SubmitField(label = 'Add')
@@ -41,3 +46,9 @@ class TableForm(FlaskForm):
     table_name = StringField(label = 'name', validators=[DataRequired(), Length(min=2, max=30)])
     capacity = IntegerField(label = 'capacity', validators=[DataRequired(), NumberRange(min=1)])
     submit = SubmitField(label = 'Save')
+
+class ConfirmBookingForm(FlaskForm):
+    date = HiddenField('Date', validators=[DataRequired()])
+    guests = HiddenField('Guests', validators=[DataRequired()])
+    time_slot = HiddenField('Time Slot', validators=[DataRequired()])
+    submit = SubmitField(label = 'Confirm Reservation')

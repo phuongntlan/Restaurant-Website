@@ -5,6 +5,7 @@ from restaurant import db
 from flask_login import login_user, logout_user, login_required, current_user
 from werkzeug.utils import secure_filename
 import os
+from sqlalchemy.orm import joinedload
 
 # Create blueprint prefix /admin/
 admin_bp = Blueprint('admin', __name__, url_prefix='/admin')
@@ -131,8 +132,57 @@ def delete_table(table_id):
 
 @admin_bp.route('/manage_reservations', methods=['POST', 'GET'])
 def manage_reservations():
-    reservations = Reservation.query.all()
-    return render_template('admin/manage_reservations.html', reservations = reservations)
+    # We use joinedload to fetch User and Table data alongside the Reservation.
+    # This prevents the "N+1 query" problem in your dashboard.
+    reservations = Reservation.query.options(
+        joinedload(Reservation.customer), 
+        joinedload(Reservation.table_info)
+    ).order_by(Reservation.date.desc()).all()
+    
+    return render_template('admin/manage_reservations.html', reservations=reservations)
+
+@admin_bp.route('/update_reservation_status', methods=['POST'])
+def update_reservation_status():
+    # 1. Get the data from the submitted form
+    reservation_id = request.form.get('reservation_id')
+    new_status = request.form.get('status')
+
+    if reservation_id and new_status:
+        # 2. Fetch the reservation from the database
+        reservation = Reservation.query.get(reservation_id)
+        
+        if reservation:
+            # 3. Update the status and commit changes
+            reservation.status = new_status
+            db.session.commit()
+            flash(f'Successfully updated Reservation #{reservation_id} to {new_status}!', 'success')
+        else:
+            flash('Error: Reservation not found.', 'danger')
+    else:
+        flash('Error: Invalid data submitted.', 'danger')
+
+    # 4. Redirect back to the management page to see the updated list
+    return redirect(url_for('admin.manage_reservations'))
+
+@admin_bp.route('/delete_reservation/<int:id>', methods=['POST'])
+def delete_reservation(id):
+    # 1. Fetch the reservation by ID or return 404 if not found
+    reservation = Reservation.query.get_or_404(id)
+    
+    try:
+        # 2. Delete from database
+        db.session.delete(reservation)
+        db.session.commit()
+        flash(f'Reservation #RES-{id} has been successfully removed.', 'success')
+    except Exception as e:
+        # 3. Rollback in case of database errors
+        db.session.rollback()
+        flash('An error occurred while trying to delete the reservation.', 'danger')
+        print(f"Error: {e}")
+
+    # 4. Redirect back to the management list
+    return redirect(url_for('admin.manage_reservations'))
+
 @admin_bp.route('/logout')
 def logout():
     return redirect(url_for('main.logout'))

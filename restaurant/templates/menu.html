@@ -1,38 +1,192 @@
 {% extends "layout.html" %}
 
-<!-- {% block section_title %}Table Reservations{% endblock %} -->
-
 {% block content %}
-<!-- ========== MENU ==========-->
 <section class="menu section bd-container" id="menu">
-    <h2 class="section-title">Menu</h2>
+    <div class="menu__header" style="text-align: center; margin-bottom: 3rem;">
+        <span class="section-subtitle" style="display: block; color: var(--first-color); font-weight: 600; margin-bottom: 0.5rem;">Delicious & Healthy</span>
+        <h2 class="section-title" style="font-family: 'Playfair Display', serif; font-size: 2.5rem; color: var(--title-color);">Our Special Menu</h2>
+    </div>
 
-    <!-- SEARCH BOX -->
-    <div class="search-box">
-        <button class="btn-search"><i class='bx bxs-search'></i></button>
-        <input type="text" class="input-search" placeholder="Search..">
-      </div>
-    <!-- SEARCH BOX ENDS -->
+    <div class="menu__search-container">
+        <div class="search-wrapper">
+            <i class='bx bx-search search-icon'></i>
+            <input type="text" id="menu-search" class="search-input" placeholder="Find your favorite dish...">
+        </div>
+    </div>
 
-    <!-- ========== ITEMS ==========-->
-    <div class="menu__container bd-grid">
-
+    <div class="menu__container bd-grid" id="menu-items">
         {% for item in items %}
-        <div class="menu__content">
-            <!-- <img src="static/styles/img/plate1.png" alt="" class="menu__img"> -->
-            <!-- <img src="static/styles/img/{{ item.source }}"  alt="" class="menu__img" /> -->
-            <img class="menu__img" src="{{ url_for('static', filename = '/img/'+item.source) }}" alt="" class="menu__img">
-            <!-- <h3 class="menu__name">Barbecue salad</h3> -->
-            <h3 class="menu__name">{{ item.name }}</h3>
-            <!-- <span class="menu__detail">Delicious dish</span> -->
-            <span class = "menu_detail"> {{ item.description }} </span>
-            <span class="menu__price">{{ "{:,.0f}".format(item.price) }} VND</span>
-            <!-- <a href="#" class="button menu__button"><i class='bx bx-cart-alt'></i></a> -->
-
+        <div class="menu__card shadow-animate">
+            <div class="menu__img-wrapper">
+                <img src="{{ url_for('static', filename = '/img/'+item.source) }}" alt="{{ item.name }}" class="menu__img">
+            </div>
+            
+            <div class="menu__data">
+                <h3 class="menu__name">{{ item.name }}</h3>
+                <p class="menu__description">{{ item.description }}</p>
+                
+                <div class="menu__footer">
+                    <span class="menu__price">{{ "{:,.0f}".format(item.price) }} <small>VND</small></span>
+                </div>
+            </div>
         </div>
         {% endfor %}
-
     </div>
 </section>
-<!-- ========== MENU ENDS ==========-->
+
+<style>
+    /* Search Box Style */
+    .menu__search-container {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 4rem;
+    }
+
+    .search-wrapper {
+        position: relative;
+        width: 100%;
+        max-width: 500px;
+        display: flex;
+        align-items: center;
+    }
+
+    .search-icon {
+        position: absolute;
+        left: 1.25rem;
+        font-size: 1.5rem;
+        color: var(--first-color);
+    }
+
+    .search-input {
+        width: 100%;
+        padding: 1rem 1.5rem 1rem 3.5rem;
+        border-radius: 3rem;
+        border: 2px solid #f0fdf4;
+        background-color: #fff;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        outline: none;
+        transition: 0.3s;
+        font-family: inherit;
+        font-size: 0.95rem;
+    }
+
+    .search-input:focus {
+        border-color: var(--first-color);
+        box-shadow: 0 4px 20px rgba(22, 163, 74, 0.15);
+    }
+
+    /* Menu Grid */
+    .menu__container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 2.5rem;
+    }
+
+    /* Card Style */
+    .menu__card {
+        background-color: #fff;
+        border-radius: 1.5rem;
+        overflow: hidden;
+        border: 1px solid #f3f4f6;
+        transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        display: flex;
+        flex-direction: column;
+    }
+
+    .menu__card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 35px rgba(0,0,0,0.08);
+    }
+
+    .menu__img-wrapper {
+        width: 100%;
+        height: 200px;
+        overflow: hidden;
+        background-color: #f9fafb;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .menu__img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: 0.5s;
+    }
+
+    .menu__card:hover .menu__img {
+        transform: scale(1.1);
+    }
+
+    .menu__data {
+        padding: 1.5rem;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .menu__name {
+        font-size: 1.25rem;
+        color: var(--title-color);
+        margin-bottom: 0.5rem;
+        font-weight: 700;
+    }
+
+    .menu__description {
+        font-size: 0.85rem;
+        color: var(--text-color);
+        margin-bottom: 1.5rem;
+        line-height: 1.5;
+        flex-grow: 1;
+    }
+
+    .menu__footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-top: 1rem;
+        border-top: 1px solid #f9fafb;
+    }
+
+    .menu__price {
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: var(--first-color);
+    }
+
+    .menu__price small {
+        font-size: 0.7rem;
+        margin-left: 2px;
+    }
+
+    /* Animation */
+    .shadow-animate {
+        animation: fadeInUp 0.6s ease-out forwards;
+    }
+
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+</style>
+
+<script>
+    // Xử lý Search Real-time (Đơn giản)
+    document.getElementById('menu-search').addEventListener('input', function(e) {
+        let filter = e.target.value.toLowerCase();
+        let cards = document.querySelectorAll('.menu__card');
+        
+        cards.forEach(card => {
+            let name = card.querySelector('.menu__name').textContent.toLowerCase();
+            let desc = card.querySelector('.menu__description').textContent.toLowerCase();
+            
+            if(name.includes(filter) || desc.includes(filter)) {
+                card.style.display = "flex";
+            } else {
+                card.style.display = "none";
+            }
+        });
+    });
+</script>
 {% endblock %}

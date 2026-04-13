@@ -1,93 +1,159 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
-  <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-    <!-- ICONS -->
+    <title>Login | Green Bistro</title>
     <script src="https://kit.fontawesome.com/64d58efce2.js" crossorigin="anonymous"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
 
-    <!-- CSS -->
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='styles/css/style-login.css') }}">
+        body {
+            background: #f0fdf4;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
 
-    <title>Login</title>
+        .main-container {
+            display: flex;
+            background: white;
+            border-radius: 30px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 900px;
+            min-height: 550px;
+        }
 
-  </head>
+        /* Phần ảnh bên trái */
+        .side-image {
+            flex: 1;
+            background: linear-gradient(rgba(22, 163, 74, 0.7), rgba(21, 128, 61, 0.8)), 
+                        url('https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80');
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .side-image h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 3rem;
+            margin-bottom: 10px;
+            letter-spacing: 2px;
+        }
+
+        .side-image p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            font-weight: 300;
+        }
+
+        /* Phần Form bên phải */
+        .login-section {
+            flex: 1;
+            padding: 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .login-header { margin-bottom: 30px; }
+        .login-header h2 { color: #16a34a; font-size: 1.8rem; font-weight: 600; }
+        .login-header p { color: #888; font-size: 0.9rem; }
+
+        .input-group { margin-bottom: 20px; position: relative; }
+        .input-group i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #16a34a; }
+        
+        .input-group input {
+            width: 100%;
+            padding: 12px 15px 12px 45px;
+            border: 2px solid #f0f0f0;
+            border-radius: 12px;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        .input-group input:focus { border-color: #16a34a; }
+
+        .btn-submit {
+            width: 100%;
+            padding: 14px;
+            background: #16a34a;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-top: 10px;
+        }
+
+        .btn-submit:hover { background: #15803d; transform: translateY(-2px); }
+
+        .footer-text { margin-top: 25px; text-align: center; font-size: 0.9rem; color: #666; }
+        .footer-text a { color: #16a34a; font-weight: 600; text-decoration: none; }
+
+        /* Responsive cho Mobile */
+        @media (max-width: 768px) {
+            .main-container { flex-direction: column; }
+            .side-image { padding: 60px 20px; }
+            .side-image h1 { font-size: 2.2rem; }
+            .login-section { padding: 40px 30px; }
+        }
+    </style>
 </head>
-
 <body>
-  <div class="container">
-    <div class="forms-container">
-      <div class="signin-signup">
-        <!-- LOGIN FORM -->
-        <form method="POST" action="{{ url_for('login_page') }}" class="sign-in-form">
-          {{ forml.hidden_tag() }}
-          <h2 class="title">Sign in</h2>
-          <div class="input-field">
-            <i class="fas fa-user"></i>
-            <!-- <input type="text" placeholder="Username" /> -->
-            {{ forml.username(placeholder = "Username") }}
-          </div>
-          <div class="input-field">
-            <i class="fas fa-lock"></i>
-            <!-- <input type="password" placeholder="Password" /> -->
-            {{ forml.password(placeholder = "Password") }}
-          </div>
 
-          <!-- FORGOT PASSWORD -->
-          <div class='f-password'>
-            <h4 class="forgot-password"><a href="{{ url_for('forgot') }}" class="fp-link">Forgot Password?</a></h4>
-          </div>
-          <!-- FORGOT PASSWORD ENDS -->
+    <div class="main-container">
+        <div class="side-image">
+            <i class="fas fa-utensils" style="font-size: 3rem; margin-bottom: 20px;"></i>
+            <h1>RESTAURANT</h1>
+            <p>Experience the art of fine dining</p>
+        </div>
 
-          <!-- <input type="submit" value="Login" class="btn solid" /> -->
-          {{ forml.submit(class = 'btn solid') }}
+        <div class="login-section">
+            <div class="login-header">
+                <h2>Welcome Back</h2>
+                <p>Login to manage your reservations</p>
+            </div>
 
-          <p class="social-text">Or Sign in with social platforms</p>
-          <div class="social-media">
-            <a href="#" class="social-icon">
-              <i class="fab fa-facebook-f"></i>
-            </a>
-            <a href="#" class="social-icon">
-              <i class="fab fa-twitter"></i>
-            </a>
-            <a href="#" class="social-icon">
-              <i class="fab fa-google"></i>
-            </a>
-            <a href="#" class="social-icon">
-              <i class="fab fa-linkedin-in"></i>
-            </a>
-          </div>
-        </form>
-        <!-- LOGIN FORM ENDS -->
+            <form method="POST" action="{{ url_for('login_page') }}">
+                {{ forml.hidden_tag() }}
 
-      </div>
-    </div>
+                <div class="input-group">
+                    <i class="fas fa-user"></i>
+                    {{ forml.username(placeholder="Username") }}
+                </div>
 
-    <div class="panels-container">
-       <!-- LOGIN PANEL -->
-        <div class="panel left-panel">
-          <div class="content">
-            <h3>New here?</h3>
-            <p>
-              Register yourself to access our services.
-            </p>
-            <button class="btn transparent" id="sign-up-btn">
-              <a href="/register">
-                Sign up
-              </a>
-            </button>
-          </div>
-          <img src="static/styles/img/log.svg" class="image" alt="" />
+                <div class="input-group">
+                    <i class="fas fa-lock"></i>
+                    {{ forml.password(placeholder="Password") }}
+                </div>
+
+                <div style="text-align: right; margin-bottom: 20px;">
+                    <a href="{{ url_for('forgot') }}" style="color: #16a34a; font-size: 0.8rem; text-decoration: none;">Forgot Password?</a>
+                </div>
+
+                {{ forml.submit(class="btn-submit", value="Sign In") }}
+
+                <p class="footer-text">
+                    New guest? <a href="{{ url_for('register_page') }}">Create an account</a>
+                </p>
+            </form>
         </div>
     </div>
-  </div>
-  <!-- JAVASCRIPT -->
-  <script src="static/styles/js/login.js"></script>
 
 </body>
-
 </html>

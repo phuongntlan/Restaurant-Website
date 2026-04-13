@@ -1,44 +1,235 @@
 {% extends "layout.html" %}
 
-<!-- {% block section_title %}Table Reservations{% endblock %} -->
-
 {% block content %}
-<section class="menu section bd-container" id="menu">
+<section class="reservation section bd-container">
+    <div class="reservation__header" style="text-align: center; margin-bottom: 3rem;">
+        <span class="section-subtitle" style="display: block; color: var(--first-color); font-weight: 600; margin-bottom: 0.5rem;">Make a call</span>
+        <h2 class="section-title" style="font-family: 'Playfair Display', serif; font-size: 2.5rem; color: var(--title-color);">Table Reservation</h2>
+    </div>
 
-<h1 class="section-title"> Available Tables </h1>
+    <div class="reservation__container bd-grid">
+        <div class="reservation__card">
+            <div class="reservation__initial-form">
+                <div class="reservation__inputs">
+                    <div class="reservation__field">
+                        <label class="reservation__label"><i class='bx bx-calendar'></i> Select Date</label>
+                        <input type="date" id="filter-date" class="reservation__input">
+                    </div>
 
+                    <div class="reservation__field">
+                        <label class="reservation__label"><i class='bx bx-user'></i> Guests</label>
+                        <select id="filter-guests" class="reservation__input">
+                            {% for i in range(1, 9) %}
+                            <option value="{{ i }}">
+                                {{ i }} {{ 'Person' if i == 1 else 'People' }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <button type="button" onclick="checkSlots()" class="button reservation__button-full">
+                    Check Availability
+                </button>
+            </div>
+
+            <div id="slots-area" class="reservation__slots hidden">
+                <h3 class="slots__title">Available Times</h3>
+                <div id="slots-list" class="slots__grid">
+                    </div>
+            </div>
+
+            <form method="POST" id="confirm-form" class="hidden">
+                {{ form.csrf_token }}
+                {{ form.date(id="form-date", type="hidden") }}
+                {{ form.guests(id="form-guests", type="hidden") }}
+                {{ form.time_slot(id="form-time", type="hidden") }}
+
+                <div class="reservation__confirm-box">
+                    <div class="confirm__banner">
+                        <i class='bx bx-check-double'></i>
+                        <span>Slot selected! Ready to confirm?</span>
+                    </div>
+                    {{ form.submit(value="Confirm Booking Now", class="button reservation__button-confirm") }}
+                </div>
+            </form>
+        </div>
+    </div>
 </section>
+&nbsp;
+<style>
+    /* Tổng thể Card giống Login/Register */
+    .reservation__card {
+        background-color: #fff;
+        padding: 2.5rem;
+        border-radius: 1.5rem;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+        max-width: 600px;
+        margin: 0 auto;
+        border: 1px solid #f0fdf4;
+    }
 
-<!-- TABLE STARTS -->
-<table>
-  <thead id="table-header">
-    <tr>
-        <th>Table</th>
-        <th>Time</th>
-        <th>Date</th>
-        <th>Accomodation</th>
-        <th></th>
-    </tr>
-    </thead>
-    
-    <tbody>
-    {% for table in tables %}
-        <tr>
-            <td>{{ table.table }}</td>
-            <td>{{ table.time }}</td>
-            <td>{{ table.date }}</td>
-            <td>{{ table.accomodation }}</td>
-            <td>
-                <!-- <a href ='#' class = 'button'>Reserve</a> -->
-                <form method = 'POST'>
-                    {{ reserve_form.hidden_tag() }}
-                    <input id="reserved_table" name="reserved_table" type="hidden" value="{{ table.table }}">
-                    {{ reserve_form.submit(class = 'button') }}
-                </form>
-            </td>
-        </tr>
-    {% endfor %}
-    </tbody>
-</table>
-<!-- TABLE ENDS -->
+    .reservation__inputs {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .reservation__label {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 0.75rem;
+        font-weight: 600;
+        color: var(--title-color);
+        font-size: 0.9rem;
+    }
+
+    .reservation__input {
+        width: 100%;
+        padding: 0.85rem 1rem;
+        background-color: #f9fafb;
+        color: var(--text-color);
+        border: 2px solid #f3f4f6;
+        border-radius: 0.75rem;
+        outline: none;
+        transition: 0.3s;
+        font-family: inherit;
+    }
+
+    .reservation__input:focus {
+        border-color: var(--first-color);
+        background-color: #fff;
+        box-shadow: 0 0 0 4px rgba(22, 163, 74, 0.1);
+    }
+
+    /* Button Style */
+    .reservation__button-full, .reservation__button-confirm {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 1rem;
+        font-weight: 600;
+        border-radius: 0.75rem;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+    .reservation__button-confirm {
+        background-color: var(--first-color);
+        color: #fff;
+        border: none;
+        margin-top: 1rem;
+    }
+
+    .reservation__button-confirm:hover {
+        background-color: var(--first-color-alt);
+        transform: translateY(-2px);
+    }
+
+    /* Slots Style */
+    .slots__title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        text-align: center;
+        margin: 2rem 0 1rem;
+        color: var(--first-color);
+    }
+
+    .slots__grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.75rem;
+        margin-bottom: 2rem;
+    }
+
+    .slot-btn {
+        padding: 0.75rem;
+        border: 2px solid #f0fdf4;
+        border-radius: 0.75rem;
+        background: #f9fafb;
+        color: var(--text-color);
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.3s;
+        text-align: center;
+    }
+
+    .slot-btn:hover {
+        border-color: var(--first-color);
+        color: var(--first-color);
+    }
+
+    .slot-btn.active {
+        background-color: var(--first-color);
+        border-color: var(--first-color);
+        color: #fff;
+        box-shadow: 0 4px 12px rgba(22, 163, 74, 0.2);
+    }
+
+    /* Confirmation Box */
+    .confirm__banner {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        background-color: #f0fdf4;
+        color: #15803d;
+        padding: 0.75rem;
+        border-radius: 0.5rem;
+        font-size: 0.9rem;
+        font-weight: 500;
+    }
+
+    .hidden { display: none; }
+
+    @media screen and (max-width: 480px) {
+        .reservation__inputs { grid-template-columns: 1fr; }
+        .slots__grid { grid-template-columns: repeat(2, 1fr); }
+    }
+</style>
+
+<script>
+    function checkSlots() {
+        const date = document.getElementById('filter-date').value;
+        const guests = document.getElementById('filter-guests').value;
+
+        if (!date) return alert("Please select a date");
+
+        fetch(`/api/get-available-slots?date=${date}&guests=${guests}`)
+            .then(res => res.json())
+            .then(data => {
+                const list = document.getElementById('slots-list');
+                list.innerHTML = '';
+
+                if (data.slots.length === 0) {
+                    list.innerHTML = "<p style='grid-column: span 3; text-align:center; color:#9ca3af;'>No tables available.</p>";
+                }
+
+                data.slots.forEach(time_slot => {
+                    const btn = document.createElement('button');
+                    btn.type = "button";
+                    btn.innerText = time_slot;
+                    btn.className = "slot-btn";
+                    btn.onclick = () => {
+                        document.querySelectorAll('.slot-btn').forEach(b => b.classList.remove('active'));
+                        btn.classList.add('active');
+
+                        document.getElementById('form-date').value = date;
+                        document.getElementById('form-guests').value = guests;
+                        document.getElementById('form-time').value = time_slot;
+
+                        document.getElementById('confirm-form').classList.remove('hidden');
+                        
+                        // Scroll nhẹ xuống nút confirm để người dùng thấy
+                        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+                    };
+                    list.appendChild(btn);
+                });
+                document.getElementById('slots-area').classList.remove('hidden');
+            });
+    }
+</script>
 {% endblock %}

@@ -76,6 +76,7 @@ class Reservation(db.Model):
     time_slot = db.Column(db.String(30), nullable=False)
     guest_count = db.Column(db.Integer(), nullable = False)
     
+    status = db.Column(db.String(20), default='Pending', nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     table_id = db.Column(db.Integer, db.ForeignKey('table.table_id'))
 

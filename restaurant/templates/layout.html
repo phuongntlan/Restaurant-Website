@@ -1,114 +1,305 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-        <!--========== BOX ICONS ==========-->
-        <link href='https://cdn.jsdelivr.net/npm/boxicons@2.0.5/css/boxicons.min.css' rel='stylesheet'>
+    <link href='https://cdn.jsdelivr.net/npm/boxicons@2.0.5/css/boxicons.min.css' rel='stylesheet'>
+    <script src="https://kit.fontawesome.com/64d58efce2.js" crossorigin="anonymous"></script>
 
-        <!--========== CSS ==========-->
-        <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/css/styles.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
 
-        <title>Riegrow Rest.</title>
-    </head>
-    <body>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='styles/css/styles.css') }}">
 
-        <!--========== SCROLL TOP ==========-->
-        <a href="#" class="scrolltop" id="scroll-top">
-            <i class='bx bx-chevron-up scrolltop__icon'></i>
-        </a>
+    <title>Silver Leaf Restaurant</title>
 
-        <!--========== HEADER ==========-->
-        <header class="l-header" id="header">
-            <nav class="nav bd-container">
-                <a href="#" class="nav__logo"><h1>Riegrow Rest.</h1></a>
+    <style>
+        :root {
+            --first-color: #16a34a; /* Green-600 */
+            --first-color-alt: #15803d; /* Green-700 */
+            --title-color: #1f2937;
+            --text-color: #4b5563;
+            --body-color: #ffffff;
+            --container-color: #ffffff;
+            --section-padding: 4rem 0 2rem;
+        }
 
-                <div class="nav__menu" id="nav-menu">
-                    <ul class="nav__list">
-                        <li class="nav__item"><a href="{{ url_for('home_page') }}#home" class="nav__link active-link">Home</a></li>
-                        <li class="nav__item"><a href="{{ url_for('home_page') }}#about" class="nav__link">About</a></li>
-                        <li class="nav__item"><a href="{{ url_for('home_page') }}#services" class="nav__link">Services</a></li>
-                        <!-- <li class="nav__item"><a href="{{ url_for('login_page') }}" class="nav__link">Log in</a></li>
-                        <li class="nav__item"><a href="{{ url_for('register_page') }}" class="nav__link">Register</a></li> -->
-                        {% if current_user.is_authenticated %}
-                        <li class="nav__item"><a href="{{ url_for('logout') }}" class="nav__link">Log Out</a></li>
-                        {% else %}
-                        <li class="nav__item"><a href="{{ url_for('login_page') }}" class="nav__link">Log in</a></li>
-                        <li class="nav__item"><a href="{{ url_for('login_page') }}" class="nav__link">Register</a></li>
-                        {% endif %}
-                        <li class="nav__item"><a href="#contact" class="nav__link">Contact us</a></li>
+        body {
+            font-family: 'Poppins', sans-serif;
+            color: var(--text-color);
+            background-color: var(--body-color);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
 
-                        <li><i class='bx bx-moon change-theme' id="theme-button"></i></li>
-                    </ul>
-                </div>
+        .bd-container {
+            max-width: 1024px;
+            width: calc(100% - 2rem);
+            margin-left: 1rem;
+            margin-right: 1rem;
+            margin: 0 auto;
+        }
 
-                <div class="nav__toggle" id="nav-toggle">
-                    <i class='bx bx-menu'></i>
-                </div>
-            </nav>
-        </header>
-        <!--========== HEADER ENDS ==========-->
+        /* --- HEADER & NAV --- */
+        .l-header {
+            width: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 100;
+            background-color: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            transition: 0.4s;
+        }
 
-        <main class="l-main">
-            {% block content %}{% endblock %}
-        </main>
-        <!--========== FOOTER ==========-->
-        <footer class="footer section bd-container">
-            <div class="footer__container bd-grid">
-                <div class="footer__content">
-                    <a href="#" class="footer__logo">Silver Leaf</a>
-                    <span class="footer__description">Restaurant</span>
-                    <div>
-                        <a href="#" class="footer__social"><i class='bx bxl-facebook'></i></a>
-                        <a href="#" class="footer__social"><i class='bx bxl-instagram'></i></a>
-                        <a href="#" class="footer__social"><i class='bx bxl-twitter'></i></a>
+        .nav {
+            height: 4.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav__logo h1 {
+            font-family: 'Playfair Display', serif;
+            color: var(--first-color);
+            font-size: 1.5rem;
+            margin: 0;
+        }
+
+        .nav__list {
+            display: flex;
+            align-items: center;
+            list-style: none;
+            gap: 2rem;
+            margin: 0;
+        }
+
+        .nav__link {
+            color: var(--text-color);
+            font-weight: 500;
+            transition: 0.3s;
+            text-decoration: none;
+        }
+
+        .nav__link:hover, .active-link {
+            color: var(--first-color);
+        }
+
+        /* Auth Button */
+        .nav__auth {
+            background-color: var(--first-color);
+            color: white !important;
+            padding: 0.6rem 1.5rem;
+            border-radius: 0.75rem;
+            font-weight: 600;
+            transition: 0.3s;
+            box-shadow: 0 4px 12px rgba(22, 163, 74, 0.2);
+        }
+
+        .nav__auth:hover {
+            background-color: var(--first-color-alt);
+            transform: translateY(-2px);
+        }
+
+        /* --- MAIN CONTENT --- */
+        .l-main {
+            flex: 1; /* Đẩy footer xuống */
+            margin-top: 4.5rem;
+        }
+
+        /* Flash Messages */
+        .flash-message {
+            padding: 1rem;
+            text-align: center;
+            background: #f0fdf4;
+            color: var(--first-color-alt);
+            font-weight: 600;
+            border-bottom: 1px solid #dcfce7;
+        }
+
+        /* --- FOOTER --- */
+        .footer {
+            background-color: #f9fafb;
+            padding: 4rem 0 2rem;
+            border-top: 1px solid #f3f4f6;
+        }
+
+        .footer__container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 2rem;
+        }
+
+        .footer__logo {
+            font-family: 'Playfair Display', serif;
+            color: var(--first-color);
+            font-size: 1.8rem;
+            font-weight: 700;
+            text-decoration: none;
+            display: block;
+            margin-bottom: 1rem;
+        }
+
+        .footer__title {
+            font-size: 1.2rem;
+            color: var(--title-color);
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+        }
+
+        .footer__link {
+            display: block;
+            color: var(--text-color);
+            margin-bottom: 0.75rem;
+            text-decoration: none;
+            transition: 0.3s;
+        }
+
+        .footer__link:hover {
+            color: var(--first-color);
+            padding-left: 5px;
+        }
+
+        .footer__socials a {
+            font-size: 1.5rem;
+            color: var(--first-color);
+            margin-right: 1rem;
+            transition: 0.3s;
+        }
+
+        .footer__socials a:hover {
+            color: var(--first-color-alt);
+        }
+
+        .footer__copy {
+            text-align: center;
+            font-size: 0.875rem;
+            color: #9ca3af;
+            margin-top: 3.5rem;
+            padding-top: 2rem;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        /* Mobile Nav */
+        @media screen and (max-width: 768px) {
+            .nav__menu {
+                position: fixed;
+                top: -100%;
+                left: 0;
+                width: 100%;
+                background-color: #fff;
+                padding: 4rem 0;
+                box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+                transition: 0.4s;
+                text-align: center;
+            }
+            .nav__menu.show-menu { top: 0; }
+            .nav__list { flex-direction: column; gap: 1.5rem; }
+            .nav__toggle { font-size: 1.5rem; cursor: pointer; }
+        }
+    </style>
+</head>
+<body>
+
+    <a href="#" class="scrolltop" id="scroll-top">
+        <i class='bx bx-chevron-up scrolltop__icon'></i>
+    </a>
+
+    <header class="l-header" id="header">
+        <nav class="nav bd-container">
+            <a href="{{ url_for('home_page') }}" class="nav__logo"><h1>Silver Leaf.</h1></a>
+
+            <div class="nav__menu" id="nav-menu">
+                <ul class="nav__list">
+                    <li class="nav__item"><a href="{{ url_for('home_page') }}#home" class="nav__link active-link">Home</a></li>
+                    <li class="nav__item"><a href="{{ url_for('home_page') }}#services" class="nav__link">Services</a></li>
+                    <li class="nav__item"><a href="{{ url_for('menu_page') }}" class="nav__link">Menu</a></li>
+                    
+                    {% if current_user.is_authenticated %}
+                        <li class="nav__item"><a href="{{ url_for('profile_page') }}" class="nav__link">Profile</a></li>
+                        <li class="nav__item"><a href="{{ url_for('logout') }}" class="nav__link nav__auth">Log Out</a></li>
+                    {% else %}
+                        <li class="nav__item"><a href="{{ url_for('login_page') }}" class="nav__link">Login</a></li>
+                        <li class="nav__item"><a href="{{ url_for('register_page') }}" class="nav__link nav__auth">Join Us</a></li>
+                    {% endif %}
+                    
+                    <li><i class='bx bx-moon change-theme' id="theme-button" style="cursor: pointer; font-size: 1.2rem;"></i></li>
+                </ul>
+            </div>
+
+            <div class="nav__toggle" id="nav-toggle">
+                <i class='bx bx-menu'></i>
+            </div>
+        </nav>
+    </header>
+
+    <main class="l-main">
+        <!-- {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash-message">
+                        {{ message }}
                     </div>
-                </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %} -->
 
-                <div class="footer__content">
-                    <h3 class="footer__title">Services</h3>
-                    <ul>
-                        <li><a href="{{ url_for('table_page') }}" class="footer__link">Table Reservation</a></li>
-                        <li><a href="{{ url_for('menu_page') }}" class="footer__link">Menu</a></li>
-                    </ul>
-                </div>
+        {% block content %}{% endblock %}
+    </main>
 
-                <div class="footer__content">
-                    <h3 class="footer__title">Information</h3>
-                    <ul>
-                        <li><a href="#" class="footer__link">Event</a></li>
-                        <li><a href="{{ url_for('home_page')}}#contact" class="footer__link">Contact us</a></li>
-                        <li><a href="#" class="footer__link">Privacy policy</a></li>
-                        <li><a href="#" class="footer__link">Terms of services</a></li>
-                    </ul>
-                </div>
-
-                <div class="footer__content">
-                    <h3 class="footer__title">Address</h3>
-                    <ul>
-                        <li>Park Street, Taltala</li>
-                        <li>Kolkata, West Bengal</li>
-                        <li>031-4281-7093</li>
-                        <li>silverleaf@gmail.com</li>
-                    </ul>
+    &nbsp;
+    <footer class="footer">
+        <div class="footer__container bd-container">
+            <div class="footer__content">
+                <a href="#" class="footer__logo">Silver Leaf</a>
+                <p class="footer__description">Experience the finest cuisine in an elegant atmosphere with locally sourced organic ingredients.</p>
+                <div class="footer__socials">
+                    <a href="#"><i class='bx bxl-facebook-circle'></i></a>
+                    <a href="#"><i class='bx bxl-instagram-alt'></i></a>
+                    <a href="#"><i class='bx bxl-twitter'></i></a>
                 </div>
             </div>
 
-            <p class="footer__copy">&#169; 2021 Group-37. All rights reserved</p>
-        </footer>
-        <!--========== FOOTER ENDS ==========-->
+            <div class="footer__content">
+                <h3 class="footer__title">Explore</h3>
+                <ul>
+                    <li><a href="{{ url_for('table_page') }}" class="footer__link">Book a Table</a></li>
+                    <li><a href="{{ url_for('menu_page') }}" class="footer__link">Our Menu</a></li>
+                    <li><a href="#" class="footer__link">Special Offers</a></li>
+                    <li><a href="#" class="footer__link">Events</a></li>
+                </ul>
+            </div>
 
+            <div class="footer__content">
+                <h3 class="footer__title">Visit Us</h3>
+                <ul class="footer__contact" style="list-style: none; padding: 0;">
+                    <li style="margin-bottom: 0.5rem;"><i class='bx bx-map' style="color: var(--first-color); margin-right: 0.5rem;"></i> Park Street, Kolkata</li>
+                    <li style="margin-bottom: 0.5rem;"><i class='bx bx-phone' style="color: var(--first-color); margin-right: 0.5rem;"></i> 031-4281-7093</li>
+                    <li><i class='bx bx-envelope' style="color: var(--first-color); margin-right: 0.5rem;"></i> info@silverleaf.com</li>
+                </ul>
+            </div>
+        </div>
 
-        <!--========== LOADER ==========-->
-        <!-- <div class="loader-container">
-            <img src="assets/img/loader.gif" alt="">
-        </div> -->
+        <p class="footer__copy">&#169; 2026 Silver Leaf Restaurant. All rights reserved.</p>
+    </footer>
 
-        <!--========== SCROLL REVEAL ==========-->
-        <script src="https://unpkg.com/scrollreveal"></script>
-
-        <!--========== MAIN JS ==========-->
-        <script src="static/styles/js/main.js"></script>
-    </body>
+    <script src="https://unpkg.com/scrollreveal"></script>
+    <script>
+        /* SCRIPT ĐỂ MỞ MENU TRÊN MOBILE */
+        const showMenu = (toggleId, navId) =>{
+            const toggle = document.getElementById(toggleId),
+            nav = document.getElementById(navId)
+            if(toggle && nav){
+                toggle.addEventListener('click', ()=>{
+                    nav.classList.toggle('show-menu')
+                })
+            }
+        }
+        showMenu('nav-toggle','nav-menu')
+    </script>
+    <script src="{{ url_for('static', filename='styles/js/main.js') }}"></script>
+</body>
 </html>

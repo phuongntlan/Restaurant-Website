@@ -1,0 +1,144 @@
+{% extends "admin/layout.html" %}
+
+{% block section_title %}Reservation Management{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 bg-white p-6 rounded-2xl shadow-sm border border-slate-100 gap-4">
+        <div>
+            <h1 class="text-2xl font-bold text-slate-800 flex items-center">
+                <span class="bg-amber-100 p-2 rounded-lg mr-3">
+                    <i class="fas fa-book-open text-amber-600"></i>
+                </span>
+                Reservation Management
+            </h1>
+            <p class="text-slate-500 text-sm mt-1">Manage guest bookings, schedules, and table assignments</p>
+        </div>
+        <div class="flex gap-3">
+            <div class="bg-slate-50 p-1 rounded-xl border border-slate-100 flex">
+                <button class="px-4 py-2 bg-white shadow-sm text-indigo-600 rounded-lg text-xs font-bold transition">All Bookings</button>
+                <button class="px-4 py-2 text-slate-500 hover:text-slate-700 rounded-lg text-xs font-bold transition">Today</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+        <div class="overflow-x-auto"> <table class="w-full text-left border-collapse min-w-[800px]"> <thead class="bg-slate-50 text-slate-600 uppercase text-xs font-bold border-b border-slate-100">
+                    <tr>
+                        <th class="px-6 py-4">Status</th>
+                        <th class="px-6 py-4">Guest</th>
+                        <th class="px-6 py-4">Date & Time</th>
+                        <th class="px-6 py-4">Party Size</th>
+                        <th class="px-6 py-4">Assigned Table</th>
+                        <th class="px-6 py-4 text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                    {% for res in reservations %}
+                    <tr class="hover:bg-slate-50/50 transition text-sm">
+                        <td class="px-6 py-4">
+                            {% if res.status == 'Confirmed' %}
+                            <span class="bg-emerald-100 text-emerald-600 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider">Confirmed</span>
+                            {% elif res.status == 'Pending' %}
+                            <span class="bg-amber-100 text-amber-600 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider">Pending</span>
+                            {% elif res.status == 'Cancelled' %}
+                            <span class="bg-rose-100 text-rose-600 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider">Cancelled</span>
+                            {% else %}
+                            <span class="bg-slate-100 text-slate-600 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider">{{ res.status }}</span>
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-4">
+                            <div class="font-bold text-slate-800">{{ res.customer.fullname if res.customer else 'Unknown' }}</div>
+                            <div class="text-xs text-slate-400 font-medium">ID: #RES-{{ res.id }}</div>
+                        </td>
+                        <td class="px-6 py-4 text-slate-600 whitespace-nowrap">
+                            <div class="flex items-center font-medium">
+                                <i class="far fa-calendar-alt mr-2 text-indigo-400"></i> {{ res.date.strftime('%d %b %Y') }}
+                            </div>
+                            <div class="text-xs text-slate-400 mt-1 italic">
+                                <i class="far fa-clock mr-2 text-indigo-400"></i> {{ res.time_slot }}
+                            </div>
+                        </td>
+                        <td class="px-6 py-4">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-md bg-slate-100 text-slate-700 font-bold">
+                                {{ res.guest_count }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 font-bold text-indigo-600">
+                            {{ res.table_info.table_name if res.table_info else 'N/A' }}
+                        </td>
+                        <td class="px-6 py-4">
+                            <div class="flex justify-center gap-2">
+                                <button onclick="openStatusModal('{{ res.id }}', '{{ res.status }}')"
+                                    class="text-indigo-600 hover:bg-indigo-50 px-3 py-1.5 rounded-lg transition font-bold text-xs border border-indigo-100">
+                                    Update
+                                </button>
+                                <form action="{{ url_for('admin.delete_reservation', id=res.id) }}" method="POST" onsubmit="return confirm('Remove this reservation?')">
+                                    <button type="submit" class="text-red-400 hover:text-red-600 hover:bg-red-50 p-2 rounded-lg transition">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div id="statusModal" class="fixed inset-0 bg-slate-900/60 hidden backdrop-blur-sm flex items-center justify-center p-4 z-50">
+    <div class="bg-white rounded-[2.5rem] shadow-2xl w-full max-w-sm overflow-hidden border border-indigo-50">
+        <div class="px-9 pt-9 pb-4 text-center">
+            <h2 class="text-2xl font-black text-slate-800 tracking-tight">Update Status</h2>
+            <p class="text-slate-400 text-sm mt-1">Select the new state for this booking</p>
+        </div>
+
+        <form action="{{ url_for('admin.update_reservation_status') }}" method="POST" class="p-9 pt-4">
+            <input type="hidden" name="reservation_id" id="modal_res_id">
+            
+            <div class="space-y-3">
+                {% for status_option in ['Confirmed', 'Pending', 'Cancelled'] %}
+                <label class="flex items-center p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl cursor-pointer hover:border-indigo-500 transition-all group">
+                    <input type="radio" name="status" value="{{ status_option }}" class="w-4 h-4 text-indigo-600">
+                    <span class="ml-4 font-bold text-slate-700">{{ status_option }}</span>
+                </label>
+                {% endfor %}
+            </div>
+
+            <div class="flex gap-4 mt-8">
+                <button type="button" onclick="closeStatusModal()" class="flex-1 px-4 py-4 border-2 border-slate-100 rounded-2xl text-slate-500 font-bold">Cancel</button>
+                <button type="submit" class="flex-[2] bg-indigo-600 text-white font-black py-4 rounded-2xl shadow-lg">Save</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    const modal = document.getElementById('statusModal');
+    const resIdInput = document.getElementById('modal_res_id');
+
+    function openStatusModal(id, currentStatus) {
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        resIdInput.value = id;
+        
+        const radios = document.getElementsByName('status');
+        for (let radio of radios) {
+            if (radio.value === currentStatus) {
+                radio.checked = true;
+            }
+        }
+    }
+
+    function closeStatusModal() {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+    }
+
+    window.onclick = function (event) {
+        if (event.target == modal) closeStatusModal();
+    }
+</script>
+{% endblock %}

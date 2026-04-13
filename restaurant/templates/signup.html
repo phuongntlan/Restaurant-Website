@@ -1,101 +1,179 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Register | Green Bistro</title>
+    <script src="https://kit.fontawesome.com/64d58efce2.js" crossorigin="anonymous"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
 
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        body {
+            background: #f0fdf4;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
 
-        <!-- ICONS -->
-        <script src="https://kit.fontawesome.com/64d58efce2.js" crossorigin="anonymous"></script>
+        .main-container {
+            display: flex;
+            background: white;
+            border-radius: 30px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 1000px; /* Rộng hơn một chút vì nhiều trường nhập */
+            min-height: 650px;
+        }
 
-        <!-- CSS -->
-        <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='styles/css/style-login.css') }}">
+        /* Phần Form bên trái */
+        .register-section {
+            flex: 1.2;
+            padding: 40px 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
 
-        <title>Registration</title>
+        .register-header { margin-bottom: 25px; }
+        .register-header h2 { color: #16a34a; font-size: 1.8rem; font-weight: 600; }
+        .register-header p { color: #888; font-size: 0.9rem; }
 
-    </head>
-</head>
+        /* Grid để chia 2 cột cho các ô nhập nếu cần, ở đây mình làm 1 cột cho gọn */
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
 
-<body>
-    <div class="container sign-up-mode">
-        <div class="forms-container">
-            <div class="signin-signup">
-                <!-- REGISTRATION FORM -->
-                <form method="POST" action="{{ url_for('register_page') }}" class="sign-up-form">
-                    {{ form.hidden_tag() }}
-                    <h2 class="title">Sign up</h2>
-
-                    <div class="input-field">
-                        <i class="fas fa-user"></i>
-                        {{ form.username(placeholder = "Username") }}
-                    </div>
-                    <div class="input-field">
-                        <i class="fas fa-user"></i>
-                        {{ form.fullname(placeholder = "Full Name") }}
-                    </div>
-                    <div class="input-field">
-                        <i class="fas fa-map-marker-alt"></i>
-                        {{ form.address(placeholder = "Address") }}
-                    </div>
-                    <div class="input-field">
-                        <i class="fas fa-mobile-alt"></i>
-                        <!-- <input type="email" placeholder="Email" /> -->
-                        {{ form.phone_number(placeholder = 'Phone Number') }}
-                    </div>
-                    <div class="input-field">
-                        <i class="fas fa-lock"></i>
-                        <!-- <input type="password" placeholder="Password" /> -->
-                        {{ form.password1(placeholder = 'Password') }}
-                    </div>
-                    <div class="input-field">
-                        <i class="fas fa-lock"></i>
-                        <!-- <input type="password" placeholder="Confirm Password" /> -->
-                        {{ form.password2(placeholder = 'Confirm Password') }}
-                    </div>
-                    <!-- <input type="submit" class="btn" value="Sign up" /> -->
-                    {{ form.submit(class = 'btn') }}
-
-                    <p class="social-text">Or Sign up with social platforms</p>
-                    <div class="social-media">
-                        <a href="#" class="social-icon">
-                            <i class="fab fa-facebook-f"></i>
-                        </a>
-                        <a href="#" class="social-icon">
-                            <i class="fab fa-twitter"></i>
-                        </a>
-                        <a href="#" class="social-icon">
-                            <i class="fab fa-google"></i>
-                        </a>
-                        <a href="#" class="social-icon">
-                            <i class="fab fa-linkedin-in"></i>
-                        </a>
-                    </div>
-                </form>
-                <!-- REGISTRATION FORM ENDS -->
-            </div>
-        </div>
+        .input-group { margin-bottom: 15px; position: relative; }
+        .input-group.full { grid-column: span 2; } /* Ô nào muốn dài hết hàng */
         
-    </div>
-<div class="panels-container sign-in-mode">
-            <!-- REGISTER PANEL -->
-            <div class="panel right-panel">
-                <div class="content">
-                    <h3>One of us?</h3>
-                    <p>
-                        Already registered? then hop on & access our services.
-                    </p>
-                    <button class="btn transparent" id="sign-in-btn">
-                        Sign in
-                    </button>
-                </div>
-                <!-- <img src="static/styles/img/register.svg" class="image" alt="" /> -->
+        .input-group i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #16a34a; }
+        
+        .input-group input {
+            width: 100%;
+            padding: 12px 15px 12px 45px;
+            border: 2px solid #f0f0f0;
+            border-radius: 12px;
+            outline: none;
+            transition: 0.3s;
+            font-size: 0.9rem;
+        }
+
+        .input-group input:focus { border-color: #16a34a; background: #fff; box-shadow: 0 0 8px rgba(22, 163, 74, 0.1); }
+
+        .btn-submit {
+            width: 100%;
+            padding: 14px;
+            background: #16a34a;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-top: 10px;
+        }
+
+        .btn-submit:hover { background: #15803d; transform: translateY(-2px); }
+
+        /* Phần ảnh bên phải */
+        .side-image {
+            flex: 1;
+            background: linear-gradient(rgba(22, 163, 74, 0.7), rgba(21, 128, 61, 0.8)), 
+                        url('https://images.unsplash.com/photo-1552566626-52f8b828add9?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80');
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .side-image h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            letter-spacing: 2px;
+        }
+
+        .footer-text { margin-top: 20px; text-align: center; font-size: 0.85rem; color: #666; }
+        .footer-text a { color: #16a34a; font-weight: 600; text-decoration: none; }
+
+        /* Responsive cho Mobile */
+        @media (max-width: 850px) {
+            .main-container { flex-direction: column-reverse; max-width: 500px; }
+            .form-grid { grid-template-columns: 1fr; }
+            .input-group.full { grid-column: span 1; }
+            .side-image { padding: 40px 20px; min-height: 200px; }
+            .register-section { padding: 30px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="main-container">
+        <div class="register-section">
+            <div class="register-header">
+                <h2>Join Us</h2>
+                <p>Create an account to start booking your table</p>
             </div>
+
+            <form method="POST" action="{{ url_for('register_page') }}">
+                {{ form.hidden_tag() }}
+
+                <div class="form-grid">
+                    <div class="input-group">
+                        <i class="fas fa-user"></i>
+                        {{ form.username(placeholder="Username") }}
+                    </div>
+                    <div class="input-group">
+                        <i class="fas fa-id-card"></i>
+                        {{ form.fullname(placeholder="Full Name") }}
+                    </div>
+
+                    <div class="input-group full">
+                        <i class="fas fa-map-marker-alt"></i>
+                        {{ form.address(placeholder="Address") }}
+                    </div>
+                    <div class="input-group full">
+                        <i class="fas fa-mobile-alt"></i>
+                        {{ form.phone_number(placeholder="Phone Number") }}
+                    </div>
+
+                    <div class="input-group">
+                        <i class="fas fa-lock"></i>
+                        {{ form.password1(placeholder="Password") }}
+                    </div>
+                    <div class="input-group">
+                        <i class="fas fa-shield-alt"></i>
+                        {{ form.password2(placeholder="Confirm Pass") }}
+                    </div>
+                </div>
+
+                {{ form.submit(class="btn-submit", value="Create Account") }}
+
+                <p class="footer-text">
+                    Already a member? <a href="{{ url_for('login_page') }}">Sign in instead</a>
+                </p>
+            </form>
         </div>
 
-    <!-- JAVASCRIPT -->
-    <script src="static/styles/js/login.js"></script>
-</body>
+        <div class="side-image">
+            <i class="fas fa-concierge-bell" style="font-size: 3rem; margin-bottom: 20px;"></i>
+            <h1>WELCOME</h1>
+            <p>Join our community for a better dining experience</p>
+        </div>
+    </div>
 
+</body>
 </html>
